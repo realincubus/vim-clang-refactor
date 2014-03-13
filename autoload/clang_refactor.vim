@@ -107,8 +107,8 @@ let g:clang_refactor#style_options = s:getg('clang_refactor#style_options', {})
 
 " check version of clang-refactor "{{{
 let s:version = clang_refactor#get_version()
-if s:version[0] < 3 || (s:version[0] == 3 && s:version[1] < 4)
-    echoerr 'clang-refactor 3.3 or earlier is not supported for the lack of aruguments'
+"if s:version[0] < 3 || (s:version[0] == 3 && s:version[1] < 4)
+"    echoerr 'clang-refactor 3.3 or earlier is not supported for the lack of aruguments'
 endif
 "}}}
 
