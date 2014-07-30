@@ -112,12 +112,8 @@ let g:clang_refactor#style_options = s:getg('clang_refactor#style_options', {})
 "endif
 "}}}
 
-function! clang_refactor#refactorV(line1, col1, line2, col2, transformtype)
-    let args = printf(" %s %s -lines=%s-%s:%s-%s", expand('%:p'), a:transformtype, a:line1, a:col1, a:line2, a:col2)
-    let clang_refactor = printf("%s %s ", g:clang_refactor#command, args)
-    echo clang_refactor
-    return s:system(clang_refactor)
-endfunction
+
+
 " refactor codes {{{
 function! clang_refactor#refactor(line1, line2, transformtype)
 "    let args = printf(" -lines=%d:%d -style=%s %s",
@@ -135,6 +131,24 @@ function! clang_refactor#refactor(line1, line2, transformtype)
 endfunction
 " }}}
 
+function! clang_refactor#refactorV(line1, col1, line2, col2, transformtype)
+    let args = printf(" %s %s -lines=%s-%s:%s-%s", expand('%:p'), a:transformtype, a:line1, a:col1, a:line2, a:col2)
+    echo args
+
+    let clang_refactor = printf("%s %s ", g:clang_refactor#command, args)
+    echo clang_refactor
+    return s:system(clang_refactor)
+endfunction
+
+function! clang_refactor#refactorGlobalV(line1, col1, line2, col2, transformtype)
+    let args = printf("-p . -include . %s -target=%s-%s:%s-%s:%s", a:transformtype, a:line1, a:col1, a:line2, a:col2, expand('%:p') )
+    echo args
+
+    let clang_refactor = printf("%s %s ", g:clang_refactor#command, args)
+    echo clang_refactor
+    return s:system(clang_refactor)
+endfunction
+
 function! clang_refactor#replaceV(line1, col1, line2, col2, transformtype )
     let pos_save = getpos('.')
     let sel_save = &l:selection
@@ -145,6 +159,24 @@ function! clang_refactor#replaceV(line1, col1, line2, col2, transformtype )
         let refactorted = clang_refactor#refactorV(a:line1, a:col1, a:line2, a:col2, a:transformtype)
 
 	e
+    finally
+        call setreg('g', save_g_reg, save_g_regtype)
+        let &l:selection = sel_save
+        call setpos('.', pos_save)
+    endtry
+
+endfunction
+
+function! clang_refactor#replaceGlobalV(line1, col1, line2, col2, transformtype )
+    let pos_save = getpos('.')
+    let sel_save = &l:selection
+    let &l:selection = "inclusive"
+    let [save_g_reg, save_g_regtype] = [getreg('g'), getregtype('g')]
+
+    try
+        let refactorted = clang_refactor#refactorGlobalV(a:line1, a:col1, a:line2, a:col2, a:transformtype)
+
+	tabdo windo e
     finally
         call setreg('g', save_g_reg, save_g_regtype)
         let &l:selection = sel_save
