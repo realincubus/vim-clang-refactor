@@ -141,7 +141,7 @@ function! clang_refactor#refactorV(line1, col1, line2, col2, transformtype)
 endfunction
 
 function! clang_refactor#refactorGlobalV(line1, col1, line2, col2, transformtype)
-    let args = printf("-p . -include . %s -target=%s-%s:%s-%s:%s", a:transformtype, a:line1, a:col1, a:line2, a:col2, expand('%:p') )
+    let args = printf("-query-mangled -p . -include . %s -target=%s-%s:%s-%s:%s", a:transformtype, a:line1, a:col1, a:line2, a:col2, expand('%:p') )
     echo args
 
     let clang_refactor = printf("%s %s ", g:clang_refactor#command, args)
